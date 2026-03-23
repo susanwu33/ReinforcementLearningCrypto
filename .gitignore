@@ -14,7 +14,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
+/env/
 build/
 develop-eggs/
 dist/
@@ -34,8 +34,8 @@ wheels/
 # Virtual environments
 venv/
 .env/
-env/
-ENV/
+/env/
+/ENV/
 env.bak/
 venv.bak/
 
