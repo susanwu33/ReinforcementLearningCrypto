@@ -52,10 +52,20 @@ def calculate_shap_for_agent(policy_net, env, device, feature_names, n_backgroun
         explainer = shap.DeepExplainer(policy_net, background)
         shap_values = explainer.shap_values(test_obs)
         
-        if isinstance(shap_values, list):
-            avg_abs_shap = np.mean([np.abs(sv).mean(axis=0) for sv in shap_values], axis=0)
+        # Convert to numpy array (handles lists of arrays or standard arrays)
+        abs_shap = np.abs(np.array(shap_values))
+        
+        num_features = test_obs.shape[1]
+        # Find which axis corresponds to features (assume it's the last one matching num_features)
+        feature_axis = next((i for i in reversed(range(abs_shap.ndim)) if abs_shap.shape[i] == num_features), None)
+        
+        if feature_axis is not None:
+            axes_to_mean = tuple(i for i in range(abs_shap.ndim) if i != feature_axis)
+            avg_abs_shap = abs_shap.mean(axis=axes_to_mean).flatten()
         else:
-            avg_abs_shap = np.abs(shap_values).mean(axis=(0, 1))
+            # Fallback if shape is completely unexpected, just use marginal perturbation
+            raise ValueError(f"Could not find feature dimension {num_features} in SHAP shape {abs_shap.shape}")
+
             
     except Exception as e:
         print(f"SHAP execution failed due to environment issues ({e}). Falling back to Marginal Perturbation Analysis.")
@@ -79,9 +89,14 @@ def calculate_shap_for_agent(policy_net, env, device, feature_names, n_backgroun
                 importance = torch.mean(torch.abs(base_outputs - perturbed_outputs)).item()
                 avg_abs_shap[i] = importance
 
+    # the environment automatically appends "pos" to the observation space
+    extended_feature_names = list(feature_names)
+    if len(extended_feature_names) == len(avg_abs_shap) - 1:
+        extended_feature_names.append("current_position")
+
     # Construct dataframe mapping features to importance
     imp_df = pd.DataFrame({
-        "feature": feature_names,
+        "feature": extended_feature_names,
         "importance": avg_abs_shap
     }).sort_values(by="importance", ascending=False)
     

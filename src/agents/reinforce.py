@@ -126,12 +126,11 @@ def train_reinforce(env_train, env_val,
         losses_pi.append(policy_loss.item())
         losses_v.append(value_loss.item())
         
-        if ep % 10 == 0:
-            pbar.set_postfix({
-                "avg_epR": round(np.mean(recent_returns), 3) if recent_returns else None,
-                "loss_pi": round(np.mean(losses_pi), 4) if losses_pi else None,
-                "loss_v": round(np.mean(losses_v), 4) if losses_v else None,
-            })
+        # Update progress bar every single episode so user has real-time feedback
+        pbar.set_postfix({
+            "avg_epR": round(np.mean(recent_returns), 3) if recent_returns else None,
+            "loss_pi": round(np.mean(losses_pi), 4) if losses_pi else None,
+        })
             
         if ep % eval_every == 0 and ep > 0:
             val_score = eval_reinforce(env_val, policy_net, device)

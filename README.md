@@ -24,8 +24,27 @@ The initial Jupyter notebooks have been professionally refactored into a scalabl
 ├── processed/              # (Generated) Cleaned Train/Val/Test CSV datasets
 ├── results/                # (Generated) Evaluation logs, summaries, and plots
 ├── methodology_report.md   # Detailed 2-3 page methodology report on findings
+├── requirements.txt        # List of dependencies
 └── README.md
 ```
+
+## Environment Setup
+
+It is highly recommended to use Conda to smoothly handle C++ compilation dependencies (like `llvmlite` and `shap`) without errors.
+
+```bash
+# 1. Create and activate a clean Python 3.10 environment
+conda create -n rl-crypto python=3.10 -y
+conda activate rl-crypto
+
+# 2. Install pre-compiled complex packages via conda-forge
+conda install numba shap -c conda-forge -y
+
+# 3. Install the remaining PyTorch and Gym dependencies via pip
+pip install -r requirements.txt
+```
+
+---
 
 ## How to Run
 

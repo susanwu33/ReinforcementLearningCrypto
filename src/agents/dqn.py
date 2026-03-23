@@ -100,6 +100,11 @@ def train_dqn(env_train, env_val,
         if done:
             recent_returns.append(ep_return)
             recent_lens.append(ep_len)
+            pbar.set_postfix({
+                "ep": len(recent_returns),
+                "avg_epR": round(np.mean(recent_returns), 3),
+                "loss": round(np.mean(losses), 4) if losses else None
+            })
             obs, _ = env_train.reset()
             ep_return = 0.0
             ep_len = 0

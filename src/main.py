@@ -30,7 +30,7 @@ def main():
     parser.add_argument("--out_dir", type=str, default="results", help="Directory to save logs/models/plots")
     parser.add_argument("--sym", type=str, default="AAVE", help="Which crypto to train on")
     parser.add_argument("--trader_types", nargs="+", default=["rational", "manipulator", "retail"])
-    parser.add_argument("--episodes", type=int, default=10, help="Episodes for REINFORCE")
+    parser.add_argument("--episodes", type=int, default=10000, help="Episodes for REINFORCE")
     parser.add_argument("--dqn_steps", type=int, default=10000, help="Steps for DQN")
     args = parser.parse_args()
 
