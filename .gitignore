@@ -41,4 +41,5 @@ venv.bak/
 
 # Project specific
 processed/
-results/
+results/*
+!results/*.png
