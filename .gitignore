@@ -43,3 +43,4 @@ venv.bak/
 processed/
 results/*
 !results/*.png
+!results/*_summary.csv

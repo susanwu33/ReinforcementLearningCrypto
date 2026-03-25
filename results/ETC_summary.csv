@@ -1,0 +1,4 @@
+trader_type,pg_return,dqn_return,pg_turnover,dqn_turnover,pg_top3_features,dqn_top3_features
+rational,-0.22760061710439716,-0.21099617145645067,0.0005743825387708214,0.18696151636990235,"['position', 'z_tod_sin', 'z_ETC_dd7d']","['z_tod_sin', 'z_ETC_dd7d', 'z_tod_cos']"
+manipulator,-0.22990095532220664,-0.3149302315627836,0.36703044227455484,0.21539345203905802,"['z_GC_r1h', 'z_ETC_dd7d', 'z_AAVE_r1h']","['z_ETC_dd7d', 'z_tod_sin', 'z_tod_cos']"
+retail,-0.34919094409167484,-0.381410537059683,0.10338885697874785,0.0941987363584147,"['z_ETC_mom24h', 'z_GC_r1h', 'z_ETC_dd7d']","['z_ETC_mom24h', 'z_GC_r1h', 'position']"
