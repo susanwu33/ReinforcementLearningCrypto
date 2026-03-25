@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-def plot_crisis_frequency(logs_dict, out_dir: Path):
+def plot_crisis_frequency(logs_dict, out_dir: Path, prefix: str = ""):
     """
     Plots the frequency of "crashes" or extreme drawdowns 
     based on the action logs from different populations.
@@ -25,10 +25,11 @@ def plot_crisis_frequency(logs_dict, out_dir: Path):
     plt.ylabel("Number of Crisis Events (24h Rolling)")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(out_dir / "crisis_frequency.png")
+    filename = f"{prefix}_" + "crisis_frequency.png" if prefix else "crisis_frequency.png"
+    plt.savefig(out_dir / filename)
     plt.close()
 
-def plot_market_efficiency(logs_dict, out_dir: Path):
+def plot_market_efficiency(logs_dict, out_dir: Path, prefix: str = ""):
     """
     Proxies market efficiency by looking at Sharpe Ratio or 
     Volatility over time as strategy execution progresses.
@@ -48,10 +49,11 @@ def plot_market_efficiency(logs_dict, out_dir: Path):
     plt.ylabel("Annualized Sharpe Ratio")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(out_dir / "market_efficiency.png")
+    filename = f"{prefix}_" + "market_efficiency.png" if prefix else "market_efficiency.png"
+    plt.savefig(out_dir / filename)
     plt.close()
 
-def plot_stablecoin_stability(logs_dict, out_dir: Path):
+def plot_stablecoin_stability(logs_dict, out_dir: Path, prefix: str = ""):
     # Depending on the dataset, if stablecoins aren't present directly, 
     # we can use portfolio volatility as a proxy for systemic stability.
     plt.figure(figsize=(10, 6))
@@ -64,13 +66,14 @@ def plot_stablecoin_stability(logs_dict, out_dir: Path):
     plt.ylabel("Rolling 24h Volatility")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(out_dir / "stablecoin_stability.png")
+    filename = f"{prefix}_" + "stablecoin_stability.png" if prefix else "stablecoin_stability.png"
+    plt.savefig(out_dir / filename)
     plt.close()
 
-def generate_all_plots(logs_dict, out_dir: str):
+def generate_all_plots(logs_dict, out_dir: str, prefix: str = ""):
     p = Path(out_dir)
     p.mkdir(parents=True, exist_ok=True)
-    plot_crisis_frequency(logs_dict, p)
-    plot_market_efficiency(logs_dict, p)
-    plot_stablecoin_stability(logs_dict, p)
+    plot_crisis_frequency(logs_dict, p, prefix)
+    plot_market_efficiency(logs_dict, p, prefix)
+    plot_stablecoin_stability(logs_dict, p, prefix)
     print(f"Saved plots to {p}")

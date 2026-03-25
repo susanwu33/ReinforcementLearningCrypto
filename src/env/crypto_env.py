@@ -24,6 +24,7 @@ class CryptoInvestEnv(gym.Env):
         add_position_to_obs: bool = True,
         clip_reward: Optional[float] = None,
         risk_lambda: float = 0.0,
+        turn_lambda: float = 0.0,
         step_size: float = 0.5,
         random_start: bool = False,
         horizon: Optional[int] = None,
@@ -40,6 +41,7 @@ class CryptoInvestEnv(gym.Env):
         self.add_position_to_obs = add_position_to_obs
         self.clip_reward = clip_reward
         self.risk_lambda = risk_lambda
+        self.turn_lambda = turn_lambda
         self.step_size = step_size
         self.trader_type = trader_type
 
@@ -118,9 +120,11 @@ class CryptoInvestEnv(gym.Env):
 
         base_reward = (net_port_r - self.rf) / safe_vol
 
+        turn_pen = self.turn_lambda * delta_pos
+
         # Apply trader type behaviors
         if self.trader_type == "rational":
-            reward = base_reward - risk_penalty
+            reward = base_reward - risk_penalty - turn_pen
         elif self.trader_type == "manipulator":
             # Reward turnover and absolute volume, less sensitive to risk
             reward = base_reward * 0.5 + delta_pos * 0.1
@@ -164,7 +168,7 @@ class CryptoInvestEnv(gym.Env):
         obs = self._get_obs() if not terminated else np.zeros(self.observation_space.shape, dtype=np.float32)
         return obs, reward, terminated, truncated, info
 
-def make_env(sym: str, split_df: pd.DataFrame, cost=0.0005, risk_lambda=0.0,
+def make_env(sym: str, split_df: pd.DataFrame, cost=0.0005, risk_lambda=0.001, turn_lambda=0.00001,
              random_start=False, horizon=None, seed=42, trader_type="rational"):
     obs_cols = infer_obs_cols(split_df)
     r_col = f"{sym}_r1h"
@@ -174,6 +178,7 @@ def make_env(sym: str, split_df: pd.DataFrame, cost=0.0005, risk_lambda=0.0,
         r_col=r_col, vol_col=vol_col,
         cost=cost,
         risk_lambda=risk_lambda,
+        turn_lambda=turn_lambda,
         clip_reward=None,
         random_start=random_start,
         horizon=horizon,

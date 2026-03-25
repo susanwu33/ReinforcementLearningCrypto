@@ -98,7 +98,7 @@ def main():
 
     # 4. Regulator Analysis Plots
     print("\nGenerating Macro Regulator Plots...")
-    generate_all_plots(all_logs, out_dir=out_dir)
+    generate_all_plots(all_logs, out_dir=out_dir, prefix=args.sym)
 
     # Save summary 
     summary_df = pd.DataFrame(metrics_summary)
