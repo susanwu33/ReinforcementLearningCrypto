@@ -1,28 +1,43 @@
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
 from pathlib import Path
 
 def plot_crisis_frequency(logs_dict, out_dir: Path, prefix: str = ""):
     """
-    Plots the frequency of "crashes" or extreme drawdowns 
-    based on the action logs from different populations.
+    Per-trader crisis stress from portfolio outcomes (net_port_r), so curves differ by policy.
+
+    Note: ``regime`` / raw market ``vol`` in the log are properties of the price path at each
+    timestep; every rollout walks the same test index, so plotting those per trader duplicates
+    the same series six times. Optional reference: one dashed line for market crash regime.
     """
     plt.figure(figsize=(10, 6))
+    # Hourly log portfolio return threshold for a "stressed" step (tune to your asset scale).
+    stress_thresh = -0.02
+
     for name, log_df in logs_dict.items():
-        if "regime" in log_df.columns:
-            # crisis defined as regime == crash
-            crashes = (log_df["regime"] == "crash").rolling(24).sum()
-            plt.plot(crashes.values, label=f"{name} Crash Frequency (24h roll)", alpha=0.7)
-        else:
-            # proxy for crisis: heavily negative portfolio return
-            net_r = log_df["net_port_r"] if "net_port_r" in log_df.columns else log_df["port_r"]
-            crashes = (net_r < -0.05).astype(int).rolling(24).sum()
-            plt.plot(crashes.values, label=f"{name} Crisis Events (<-5% ret/24h)", alpha=0.7)
-            
+        net_r = log_df["net_port_r"] if "net_port_r" in log_df.columns else log_df["port_r"]
+        stressed_hours = (net_r < stress_thresh).astype(int).rolling(24, min_periods=1).sum()
+        plt.plot(
+            stressed_hours.values,
+            label=f"{name} portfolio stress hours (24h roll, r<{stress_thresh})",
+            alpha=0.85,
+        )
+
+    first = next(iter(logs_dict.values()), None)
+    if first is not None and "regime" in first.columns:
+        mkt = (first["regime"] == "crash").astype(int).rolling(24, min_periods=1).sum()
+        plt.plot(
+            mkt.values,
+            color="0.35",
+            linestyle="--",
+            linewidth=1.5,
+            label="market: crash regime hours (24h roll, same for all)",
+            alpha=0.9,
+        )
+
     plt.title("Crisis Frequency Over Time by Trader Population")
     plt.xlabel("Hours (Timestep)")
-    plt.ylabel("Number of Crisis Events (24h Rolling)")
+    plt.ylabel("Stressed portfolio hours (24h rolling count)")
     plt.legend()
     plt.tight_layout()
     filename = f"{prefix}_" + "crisis_frequency.png" if prefix else "crisis_frequency.png"
@@ -54,16 +69,21 @@ def plot_market_efficiency(logs_dict, out_dir: Path, prefix: str = ""):
     plt.close()
 
 def plot_stablecoin_stability(logs_dict, out_dir: Path, prefix: str = ""):
-    # Depending on the dataset, if stablecoins aren't present directly, 
-    # we can use portfolio volatility as a proxy for systemic stability.
+    """
+    Rolling volatility of realized net portfolio returns per strategy.
+
+    The ``vol`` column in env logs is the asset's precomputed rolling vol from the dataframe,
+    identical across traders on the same test split; use per-step net returns instead.
+    """
     plt.figure(figsize=(10, 6))
     for name, log_df in logs_dict.items():
-        if "vol" in log_df.columns:
-            plt.plot(log_df["vol"].rolling(24).mean().values, label=f"{name} 24h systemic volatility", alpha=0.7)
-            
-    plt.title("Systemic Stability Prototype (Portfolio/Market Volatility)")
+        net_r = log_df["net_port_r"] if "net_port_r" in log_df.columns else log_df["port_r"]
+        roll_vol = net_r.rolling(24, min_periods=1).std()
+        plt.plot(roll_vol.values, label=f"{name} rolling σ(net port r), 24h", alpha=0.85)
+
+    plt.title("Strategy return volatility (not asset vol from CSV)")
     plt.xlabel("Hours (Timestep)")
-    plt.ylabel("Rolling 24h Volatility")
+    plt.ylabel("Rolling 24h σ of net portfolio log return")
     plt.legend()
     plt.tight_layout()
     filename = f"{prefix}_" + "stablecoin_stability.png" if prefix else "stablecoin_stability.png"
