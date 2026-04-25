@@ -3,13 +3,15 @@
 
 ## Analysis: Prior Sensitivity and Convergence
 
-In this experiment, we compare the convergence behavior under an informative prior (Track A) and an uninformative prior (Track B). Empirically, the informative prior tends to converge faster in the early stages. This is because it provides a stronger initial belief about each arm’s success probability, allowing the algorithm to make more confident decisions before sufficient data is observed. As a result, the algorithm reduces unnecessary exploration and accumulates less regret in the initial phase.
+In this experiment, we compare the convergence behavior under an informative prior (Track A) and an uninformative prior (Track B) using bandit algorithms on crypto return data. Empirically, both priors eventually lead to similar long-term performance, but they differ in their early-stage behavior.
 
-In contrast, the uninformative prior (e.g., Beta(3,3)) reflects higher uncertainty and treats all arms more symmetrically. This leads to more exploration early on, which slows down convergence but improves robustness. Over time, however, the influence of the prior diminishes as more observations are collected. Both priors eventually converge to similar posterior distributions and comparable long-term performance.
+The informative prior accelerates convergence in the initial phase by encoding stronger prior beliefs about the success probabilities of each arm. This allows the algorithm to reduce uncertainty more quickly and make more confident decisions with fewer observations. As a result, early regret is typically lower under Track A. In contrast, the uninformative prior starts with higher uncertainty and treats all arms more equally, leading to more exploration and slower early convergence.
 
-These observations are consistent with the prior sensitivity bounds discussed in Liu & Li (2015). Their results show that the impact of the prior on regret is bounded and decreases over time, typically at a logarithmic rate. In particular, the difference in cumulative regret between two priors is controlled and does not grow linearly with time. This explains why the advantage of the informative prior is most pronounced early on but becomes negligible as t increases.
+However, as more data is observed, the influence of the prior diminishes. This is clearly reflected in the posterior distributions, which become increasingly concentrated and similar across both tracks over time. By later stages (e.g., t=500), the posterior is dominated by observed data rather than the initial prior.
 
-Overall, the informative prior improves early-stage efficiency, while the uninformative prior provides a more neutral and robust starting point. In practice, if reliable prior knowledge is available, it can significantly accelerate learning; otherwise, an uninformative prior remains a safe and effective choice.
+These findings align with the prior sensitivity bounds in Liu & Li (2015), which show that the effect of prior misspecification on regret is bounded and decreases over time. In particular, the difference in cumulative regret induced by different priors grows sublinearly (typically logarithmically), meaning that priors mainly impact early performance but not asymptotic behavior.
+
+Overall, the informative prior improves sample efficiency in the early stage, while the uninformative prior provides a more robust and unbiased starting point. In practice, when reliable prior knowledge is available, it can significantly accelerate learning, but its long-term impact remains limited as data accumulates.
 
 
 
