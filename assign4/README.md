@@ -1,5 +1,18 @@
 # Crypto Bandit Experiment — Multi-Armed Bandits on Cryptocurrency Returns
 
+
+## Analysis: Prior Sensitivity and Convergence
+
+In this experiment, we compare the convergence behavior under an informative prior (Track A) and an uninformative prior (Track B). Empirically, the informative prior tends to converge faster in the early stages. This is because it provides a stronger initial belief about each arm’s success probability, allowing the algorithm to make more confident decisions before sufficient data is observed. As a result, the algorithm reduces unnecessary exploration and accumulates less regret in the initial phase.
+
+In contrast, the uninformative prior (e.g., Beta(3,3)) reflects higher uncertainty and treats all arms more symmetrically. This leads to more exploration early on, which slows down convergence but improves robustness. Over time, however, the influence of the prior diminishes as more observations are collected. Both priors eventually converge to similar posterior distributions and comparable long-term performance.
+
+These observations are consistent with the prior sensitivity bounds discussed in Liu & Li (2015). Their results show that the impact of the prior on regret is bounded and decreases over time, typically at a logarithmic rate. In particular, the difference in cumulative regret between two priors is controlled and does not grow linearly with time. This explains why the advantage of the informative prior is most pronounced early on but becomes negligible as t increases.
+
+Overall, the informative prior improves early-stage efficiency, while the uninformative prior provides a more neutral and robust starting point. In practice, if reliable prior knowledge is available, it can significantly accelerate learning; otherwise, an uninformative prior remains a safe and effective choice.
+
+
+
 ## 1. Overview
 
 This project implements and evaluates several multi-armed bandit algorithms in the context of cryptocurrency trading. Each cryptocurrency (BTC, ETH, SOL, BNB, USDC) is treated as an arm, and the goal is to sequentially select the asset with the highest probability of a positive return.
@@ -58,15 +71,22 @@ Implemented in
 
 * Hourly price data is resampled into **non-overlapping 8-hour intervals**
 * Log returns are computed:
-  $$
-  r_t = \log(P_t) - \log(P_{t-1})
-  $$
-* Binary reward:
-  $$
-  Y_t = \mathbb{1}(r_t > 0)
-  $$
 
-All assets are aligned into a single matrix (Y \in {0,1}^{T \times K})
+$$
+r_t = \log(P_t) - \log(P_{t-1})
+$$
+
+* Binary reward:
+
+$$
+Y_t = \mathbb{1}(r_t > 0)
+$$
+
+All assets are aligned into a single matrix 
+
+$$
+Y \in {0,1}^{T \times K}
+$$
 
 ---
 
@@ -77,14 +97,15 @@ Implemented in
 Each arm uses a **Beta-Bernoulli model**:
 
 * Prior:
-  $$
-  \theta_k \sim \text{Beta}(3,3)
-  $$
+  
+$$
+\theta_k \sim \text{Beta}(3,3)
+$$
 
 * Update:
 
-  * success → (\alpha + 1)
-  * failure → (\beta + 1)
+  * success → $\alpha + 1$
+  * failure → $\beta + 1$
 
 This enables:
 
@@ -135,8 +156,8 @@ $$
 
 Where:
 
-* (a^*) = best arm (estimated using empirical mean within each window)
-* (a_i) = chosen arm
+* $a^*$ = best arm (estimated using empirical mean within each window)
+* $a_i$ = chosen arm
 
 ---
 
@@ -190,7 +211,7 @@ Note:
 
 ### Figure 3 — Information Ratio Numerator
 
-* Shows ((E[\Delta_t])^2) over time
+* Shows $(E[\Delta_t])^2$ over time
 * Decreases as the algorithm learns
 * Indicates reduced uncertainty and improved decisions
 
