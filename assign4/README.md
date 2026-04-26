@@ -84,6 +84,30 @@ Required data files under `assign4/data/`:
 - `figure3_information_ratio.png`: empirical information-ratio trajectory for Thompson Sampling
 - `final_regret_table.csv`: final cumulative regret summary (mean, SE, CI)
 
+## Figures
+
+### Figure 1: Cumulative Regret
+
+![Figure 1](figure1_cumulative_regret.png)
+
+### Figure 2: Posterior Distributions
+
+t = 50  
+![t50](figure2_posterior_t50.png)
+
+t = 100  
+![t100](figure2_posterior_t100.png)
+
+t = 200  
+![t200](figure2_posterior_t200.png)
+
+t = 500  
+![t500](figure2_posterior_t500.png)
+
+### Figure 3: Information Ratio
+
+![Figure 3](figure3_information_ratio.png)
+
 ## 6. Results Summary
 
 From `final_regret_table.csv`:
