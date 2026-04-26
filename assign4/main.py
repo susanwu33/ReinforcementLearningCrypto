@@ -1,15 +1,30 @@
+import os
+import importlib.util
 import pandas as pd
 from src.data_loader import build_outcome_matrix
-from src.simulation import run_all_experiments
-from src.plots import (
-    plot_cumulative_regret,
-    plot_posterior_distributions,
-    plot_information_ratio,
-)
-from src.table import make_final_regret_table
+
+
+def run_preflight_checks(asset_files: dict) -> None:
+    """
+    Validate required runtime dependency and input data files before simulation.
+    """
+    if importlib.util.find_spec("scipy") is None:
+        raise ModuleNotFoundError(
+            "Missing required package: scipy. Install it with: "
+            "python3 -m pip install scipy"
+        )
+
+    missing_files = [path for path in asset_files.values() if not os.path.isfile(path)]
+    if missing_files:
+        missing_list = "\n".join(f"- {path}" for path in missing_files)
+        raise FileNotFoundError(
+            "Missing required data file(s). Expected files:\n"
+            f"{missing_list}\n"
+            "Please place all required CSVs under the data/ directory."
+        )
 
 def main():
-    # 1. 资产文件路径
+    # 1. Asset file paths
     asset_files = {
         "BTC": "data/BTC-USD_DataHr.csv",
         "ETH": "data/ETH-USD_DataHr.csv",
@@ -18,43 +33,54 @@ def main():
         "USDC": "data/USDC-USD_DataHr.csv",
     }
 
-    # 实验参数
-    T_WINDOW = 500         # 每次实验持续的时间步
-    N_REPLICATIONS = 100   # 独立重复次数
-    T_TOTAL = 1000         # 从原始数据中提取的总长度（应大于 T_WINDOW 以允许随机采样）
+    # Experiment parameters
+    T_WINDOW = 500         # Time horizon per experiment run
+    N_REPLICATIONS = 100   # Number of independent replications
+    T_TOTAL = 1000         # Total rows loaded for random window sampling (must exceed T_WINDOW)
 
-    print(f"--- 步骤 1: 加载数据 (预留采样空间 T={T_TOTAL}) ---")
-    # 修改：这里获取比 500 长的矩阵，以便 simulation 里的 sample_time_window 有切片余量
+    print("--- Preflight: Checking dependencies and data files ---")
+    run_preflight_checks(asset_files)
+
+    from src.simulation import run_all_experiments
+    from src.plots import (
+        plot_cumulative_regret,
+        plot_posterior_distributions,
+        plot_information_ratio,
+    )
+    from src.table import make_final_regret_table
+
+    print(f"--- Step 1: Loading data (sampling buffer T={T_TOTAL}) ---")
+    # Load more than 500 rows so simulation.sample_time_window has slicing headroom.
     Y_full = build_outcome_matrix(asset_files, T=T_TOTAL)
     
-    print(f"原始数据矩阵形状: {Y_full.shape}")
-    print("前 5 行数据示例:")
+    print(f"Raw outcome matrix shape: {Y_full.shape}")
+    print("First 5 rows:")
     print(Y_full.head())
 
-    print(f"\n--- 步骤 2: 运行实验 ({N_REPLICATIONS} 次随机采样路径) ---")
-    # run_all_experiments 现在内部会调用 sample_time_window
+    print(f"\n--- Step 2: Running experiments ({N_REPLICATIONS} random sampled paths) ---")
+    # run_all_experiments internally calls sample_time_window.
     results = run_all_experiments(
         Y_full=Y_full,
         n_replications=N_REPLICATIONS,
         T=T_WINDOW
     )
 
-    print("\n--- 步骤 3: 生成结果汇总表 ---")
-    # 由于引入了随机采样，确定性算法（UCB1等）现在也会有非零的 SE
+    print("\n--- Step 3: Generating summary table ---")
+    # With randomized window sampling, deterministic algorithms (e.g., UCB1) also have nonzero SE.
     table = make_final_regret_table(results)
     print(table)
     table.to_csv("final_regret_table.csv", index=False)
 
-    print("\n--- 步骤 4: 绘制图表 ---")
+    print("\n--- Step 4: Generating figures ---")
     
-    print("正在生成 Figure 1: Cumulative Regret (含 95% CI)...")
+    print("Generating Figure 1: Cumulative Regret (with 95% CI)...")
     plot_cumulative_regret(
         results,
         save_path="figure1_cumulative_regret.png",
     )
 
-    print("正在生成 Figure 2: Posterior Distributions (Thompson Sampling Snapshots)...")
-    # 传入臂名称以便在图例中显示
+    print("Generating Figure 2: Posterior Distributions (Thompson Sampling Snapshots)...")
+    # Pass arm names to show them in the legend.
     arm_names = list(Y_full.columns)
     plot_posterior_distributions(
         results,
@@ -62,13 +88,13 @@ def main():
         save_prefix="figure2_posterior"
     )
 
-    print("正在生成 Figure 3: Information Ratio Trajectory...")
+    print("Generating Figure 3: Information Ratio Trajectory...")
     plot_information_ratio(
         results,
         save_path="figure3_information_ratio.png",
     )
 
-    print("\n所有任务已完成。请检查生成的 CSV 和 PNG 文件。")
+    print("\nAll tasks completed. Please check the generated CSV and PNG files.")
 
 if __name__ == "__main__":
     main()

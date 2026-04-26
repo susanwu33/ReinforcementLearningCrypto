@@ -20,10 +20,11 @@ def make_final_regret_table(results):
 
         rows.append({
             "Algorithm": algorithm,
-            "Final cumulative regret": mean,
+            "Final Cumulative Regret": mean,
+            "Sample Mean": mean,
             "SE": se,
-            "95% CI lower": ci_low,
-            "95% CI upper": ci_high,
+            "95% CI Lower": ci_low,
+            "95% CI Upper": ci_high,
         })
 
     return pd.DataFrame(rows)

@@ -7,7 +7,7 @@ def choose_arm(algorithm: str, posteriors: list, counts: np.ndarray, t: int) -> 
     """
     K = len(posteriors)
 
-    # 1. Greedy: 基于后验均值
+    # 1. Greedy: based on posterior mean
     if algorithm == "greedy":
         values = [p.mean() for p in posteriors]
         return int(np.argmax(values))
@@ -17,21 +17,21 @@ def choose_arm(algorithm: str, posteriors: list, counts: np.ndarray, t: int) -> 
         samples = [p.sample() for p in posteriors]
         return int(np.argmax(samples))
 
-    # 3. Bayes-UCB: 使用 1 - 1/t 分位数
+    # 3. Bayes-UCB: use the 1 - 1/t quantile
     if algorithm == "bayes_ucb":
-        # 避免 t=1 时 q=0
+        # Avoid q=0 when t=1.
         q = 1 - 1.0 / max(t, 2)
         values = [p.quantile(q) for p in posteriors]
         return int(np.argmax(values))
 
-    # 4. UCB1: 典型的频率派实现
+    # 4. UCB1: standard frequentist implementation
     if algorithm == "ucb1":
         values = []
         for k in range(K):
             if counts[k] == 0:
-                values.append(np.inf) # 确保每个臂至少被试一次
+                values.append(np.inf) # Ensure each arm is tried at least once.
             else:
-                # 使用观测到的频率均值，而非带先验的贝叶斯均值
+                # Use observed empirical mean, not a prior-influenced Bayesian mean.
                 mu_hat = posteriors[k].empirical_mean()
                 bonus = np.sqrt(2 * np.log(t) / counts[k])
                 values.append(mu_hat + bonus)

@@ -7,7 +7,7 @@ def plot_cumulative_regret(results, save_path=None):
     for algorithm, result in results.items():
         regrets = result["regrets"]
         mean_regret = regrets.mean(axis=0)
-        # 计算标准误 SE 并生成 95% 置信区间
+        # Compute standard error (SE) and build 95% confidence intervals.
         se = regrets.std(axis=0, ddof=1) / np.sqrt(regrets.shape[0])
         t = np.arange(1, len(mean_regret) + 1)
 
@@ -28,7 +28,7 @@ def plot_posterior_distributions(results, arm_names, save_prefix=None):
 
     for t, params in snapshots.items():
         plt.figure(figsize=(10, 5))
-        # 这里的 params 结构是 [(a1, b1), (a2, b2), ...]
+        # params structure: [(a1, b1), (a2, b2), ...]
         for i, (a, b) in enumerate(params):
             y = beta_dist.pdf(x, a, b)
             plt.plot(x, y, label=f"{arm_names[i]} (α={a}, β={b})")

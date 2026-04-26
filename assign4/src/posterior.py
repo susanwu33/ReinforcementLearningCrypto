@@ -8,7 +8,7 @@ class BetaPosterior:
     def __init__(self, a: float = 3, b: float = 3):
         self.a = a
         self.b = b
-        # 用于 UCB1 这种频率派算法，记录纯粹的观测值
+        # Track raw observations for frequentist algorithms such as UCB1.
         self.n_success = 0
         self.n_total = 0
 
