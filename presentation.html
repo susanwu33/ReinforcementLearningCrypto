@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RL Crypto Market Stress Presentation</title>
+  <style>
+    :root {
+      --ink: #19212a;
+      --muted: #5f6874;
+      --line: #d8dee6;
+      --paper: #f7f7f3;
+      --accent: #2f6f73;
+      --accent-2: #b54a35;
+      --accent-3: #8d6c2f;
+      --panel: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e7e7df;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .deck {
+      display: grid;
+      gap: 28px;
+      padding: 28px;
+    }
+    .slide {
+      width: min(1280px, calc(100vw - 56px));
+      aspect-ratio: 16 / 9;
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid #cbcbc2;
+      box-shadow: 0 18px 45px rgba(25, 33, 42, 0.16);
+      padding: 48px 58px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+    }
+    .eyebrow {
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin-bottom: 10px;
+    }
+    h1, h2 {
+      margin: 0;
+      letter-spacing: 0;
+      line-height: 1.02;
+    }
+    h1 {
+      font-size: 58px;
+      max-width: 920px;
+    }
+    h2 {
+      font-size: 46px;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.18;
+    }
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 23px;
+      line-height: 1.35;
+    }
+    ul {
+      margin: 10px 0 0;
+      padding-left: 22px;
+    }
+    li {
+      margin: 8px 0;
+      color: var(--ink);
+      font-size: 21px;
+      line-height: 1.28;
+    }
+    .subhead {
+      font-size: 25px;
+      color: var(--muted);
+      max-width: 960px;
+      margin-top: 18px;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 30px;
+      align-items: end;
+    }
+    .profile {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+    .profile strong {
+      color: var(--ink);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px 22px;
+      min-height: 150px;
+    }
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .stat .num {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--accent-2);
+    }
+    .stat .label {
+      font-size: 16px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 19px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .table th, .table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+    .table th {
+      background: #eef0eb;
+      color: #303840;
+    }
+    .table tr:last-child td { border-bottom: 0; }
+    .figure-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    figure {
+      margin: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    figure img {
+      width: 100%;
+      height: 245px;
+      object-fit: contain;
+      display: block;
+    }
+    figcaption {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 15px;
+      text-align: center;
+    }
+    .small li { font-size: 18px; margin: 6px 0; }
+    .compact li { font-size: 19px; margin: 7px 0; }
+    .callout {
+      background: #edf4f2;
+      border-left: 6px solid var(--accent);
+      padding: 16px 20px;
+      font-size: 23px;
+      line-height: 1.28;
+    }
+    .footer {
+      color: var(--muted);
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      margin-top: 16px;
+    }
+    @media print {
+      body { background: white; }
+      .deck { padding: 0; gap: 0; }
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        box-shadow: none;
+        border: 0;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide">
+      <div>
+        <div class="eyebrow">Slide 1 / Introduction</div>
+        <h1>Reinforcement Learning for Crypto Market Stress</h1>
+        <p class="subhead">A three-assignment framework for modeling rational investors, strategic trader archetypes, and adaptive crypto asset selection.</p>
+      </div>
+      <div class="meta">
+        <div class="profile">
+          <p><strong>Team:</strong> [Name 1], [Name 2], [Name 3]</p>
+          <p><strong>Professional background:</strong> Cornell Tech students combining machine learning, finance, data engineering, and policy/regulatory analytics.</p>
+        </div>
+        <div class="callout">Core question: how do learning-based investors respond to steady markets, crashes, surges, and strategic manipulation?</div>
+      </div>
+      <div class="footer"><span>RL Crypto Project</span><span>April 30, 2026</span></div>
+    </section>
+
+    <section class="slide">
+      <div>
+        <div class="eyebrow">Slide 2 / End-User Benefits</div>
+        <h2>Decision Support for Regulators and Asset Managers</h2>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>For DOB-like regulators</h3>
+          <ul>
+            <li>Stress-test crypto markets before real crises occur.</li>
+            <li>Monitor turnover velocity, momentum herding, volatility spikes, and macro risk-off signals.</li>
+            <li>Use SHAP explanations to identify which variables drive trader behavior.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>For BlackRock-like asset managers</h3>
+          <ul>
+            <li>Compare policies across steady, crash, and surge regimes.</li>
+            <li>Quantify drawdown exposure, execution risk, and turnover costs.</li>
+            <li>Allocate attention across assets with Bayesian bandit models.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">End-user value: a surveillance and strategy-testing layer for adaptive crypto risk management.</div>
+      <div class="footer"><span>Benefits</span><span>Stress testing + explainability + allocation</span></div>
+    </section>
+
+    <section class="slide">
+      <div>
+        <div class="eyebrow">Slide 3 / Data</div>
+        <h2>Hourly Crypto, Macro, and Bandit Data</h2>
+      </div>
+      <div class="grid-3">
+        <div class="stat"><div class="num">3</div><div class="label">Main crypto assets: AAVE, ETC, SUI</div></div>
+        <div class="stat"><div class="num">~11.6k</div><div class="label">Processed feature observations per main asset</div></div>
+        <div class="stat"><div class="num">8.1k / 1.7k / 1.7k</div><div class="label">Approx. train / validation / test split per asset</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Raw inputs</h3>
+          <ul class="small">
+            <li>AAVE: 17,248 rows; ETC: 17,247 rows; SUI: 17,248 rows.</li>
+            <li>BTC: 17,250 rows; ES futures: 11,213 rows; Gold futures: 11,258 rows.</li>
+            <li>Features include returns, 4h/24h momentum, 4h/24h volatility, 7d drawdown, cross-asset returns, macro returns, trading-hour flags, and time of day.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Assignment 4 bandits</h3>
+          <ul class="small">
+            <li>Arms: BTC, ETH, SOL, BNB, USDC.</li>
+            <li>Reward: positive next 8-hour return.</li>
+            <li>100 replications; random contiguous windows with horizon T = 500.</li>
+            <li>Prior: Beta(3,3) for each asset.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer"><span>Data</span><span>Hourly observations aligned into model-ready features</span></div>
+    </section>
+
+    <section class="slide">
+      <div>
+        <div class="eyebrow">Slide 4 / Methodology</div>
+        <h2>From Single-Agent RL to Strategic Market Simulation</h2>
+      </div>
+      <div class="grid-2">
+        <div>
+          <table class="table">
+            <tr><th>Assignment</th><th>Methods</th></tr>
+            <tr><td>2</td><td>TD Q-learning and DQN for rational investor behavior under steady, crash, and surge regimes.</td></tr>
+            <tr><td>3</td><td>REINFORCE with baseline, DQN comparison, three trader archetypes, and SHAP explanations.</td></tr>
+            <tr><td>4</td><td>UCB1, Bayes-UCB, Thompson Sampling, and Greedy for Bayesian crypto asset selection.</td></tr>
+          </table>
+        </div>
+        <div class="panel">
+          <h3>Trading environment</h3>
+          <ul class="compact">
+            <li>Gymnasium environment with actions: sell, hold, buy.</li>
+            <li>Position changes by 0.5; transaction cost is 5 bps per position change.</li>
+            <li>Reward uses next-hour return scaled by rolling volatility to avoid leakage.</li>
+            <li>Regimes are derived from 24h momentum percentiles.</li>
+            <li>Trader rewards encode rational, manipulative, and retail-herding incentives.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer"><span>Methodology</span><span>RL policies + explainability + Bayesian exploration</span></div>
+    </section>
+
+    <section class="slide">
+      <div>
+        <div class="eyebrow">Slide 5 / Key Findings</div>
+        <h2>Strategic Behavior Changes Market Risk</h2>
+      </div>
+      <div class="figure-row">
+        <figure>
+          <img src="results/crisis_frequency.png" alt="Crisis frequency over time by trader population">
+          <figcaption>Rolling stress events reveal clustered crisis periods.</figcaption>
+        </figure>
+        <figure>
+          <img src="assign4/figure1_cumulative_regret.png" alt="Cumulative regret across bandit algorithms">
+          <figcaption>Low exploration performed best under noisy binary rewards.</figcaption>
+        </figure>
+      </div>
+      <div class="grid-2">
+        <ul class="small">
+          <li>Retail agents consistently relied on 24h momentum; manipulators emphasized short-term and turnover-linked signals.</li>
+          <li>REINFORCE explored more smoothly; DQN adapted faster but often with sharper policy shifts and higher turnover.</li>
+        </ul>
+        <ul class="small">
+          <li>Assignment 2 was asset-specific: ETC favored DQN, while AAVE and SUI were less negative under TD in the test window.</li>
+          <li>Greedy had the lowest bandit regret, 179.09, followed by Thompson Sampling, 179.84; UCB1 was highest, 187.06.</li>
+        </ul>
+      </div>
+      <div class="callout">Regulatory takeaway: adapt surveillance when momentum herding and turnover spikes coincide with macro risk-off signals.</div>
+      <div class="footer"><span>Findings</span><span>Behavioral incentives are observable and policy-relevant</span></div>
+    </section>
+  </main>
+</body>
+</html>
