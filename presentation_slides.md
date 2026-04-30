@@ -2,6 +2,41 @@
 
 Five-slide presentation draft for April 30, 2026.
 
+## 3-Minute Storyline
+
+**Main message:** Our project turns crypto trading data into a small stress-testing lab: instead of asking only which RL algorithm earns more return, we ask how different learned trader incentives can create market stress that regulators or asset managers should monitor.
+
+**0:00-0:25 - Hook**
+
+Crypto markets do not only move because prices change; they move because different participants react differently to the same signal. Our project studies that behavior with reinforcement learning. We started from a rational crypto trader, then added strategic archetypes like manipulators and herd-following retail, and finally used Bayesian bandits for short-term asset selection.
+
+**0:25-0:55 - Data and setup**
+
+We used hourly data for AAVE, ETC, and SUI, with BTC, S&P 500 futures, and Gold futures as cross-market context. The state includes short-term returns, 4-hour and 24-hour momentum, volatility, 7-day drawdown, macro returns, and time-of-day signals. The environment has three actions: sell, hold, and buy, with transaction costs and rewards based on next-hour returns, so the agent cannot look ahead.
+
+**0:55-1:35 - What we built**
+
+The key design choice was to train different trader types with different incentives. A rational agent maximizes risk-adjusted return. A manipulator is rewarded more for turnover and short-term movement. A retail-herding agent is pushed to follow 24-hour momentum. We trained both DQN and REINFORCE-style policy-gradient agents, then used SHAP-style feature attribution to check whether the learned behavior matched the intended trader design.
+
+**1:35-2:25 - Most important finding**
+
+The main finding is that trader incentives changed market risk more clearly than any single algorithm label. Manipulators produced much higher turnover across assets. For example, policy-gradient manipulator turnover was about 0.27 for AAVE, 0.37 for ETC, and 0.34 for SUI, while retail turnover stayed around 0.08 to 0.10. SHAP also supported the story: retail agents consistently relied on 24-hour momentum, while manipulators relied more on short-term signals, position, volatility, and timing. This means the framework is not just producing returns; it is producing interpretable stress signals.
+
+**2:25-2:50 - Bandit result**
+
+In the final bandit experiment, we treated BTC, ETH, SOL, BNB, and USDC as arms with a Beta(3,3) prior over the probability of a positive 8-hour return. Greedy had the lowest final cumulative regret, 179.09, just ahead of Thompson Sampling at 179.84, while UCB1 was highest at 187.06. The takeaway is that when crypto arms are noisy and similar, extra exploration can be costly under this regret definition.
+
+**2:50-3:00 - Close**
+
+Our final takeaway is regulatory: surveillance should not only track volatility after it appears. It should track behavior that creates fragility, especially turnover spikes, momentum herding, and macro risk-off signals appearing together.
+
+## Slide Priority for a 3-Minute Version
+
+1. Spend the most time on Slide 7: strategic behavior changes market risk.
+2. Mention Slide 5 quickly as evidence that the dataset is real and broad.
+3. Use Slide 6 only to explain the trader archetypes, not every model detail.
+4. Treat the bandit result as a short final experiment, not the main story.
+
 ## Slide 1: Introduction and Professional Background
 
 **Reinforcement Learning for Crypto Market Stress and Strategic Trading**
